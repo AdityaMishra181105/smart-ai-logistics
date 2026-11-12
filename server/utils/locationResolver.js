@@ -1,0 +1,42 @@
+const { nerLocations } = require('../constants/nerLocations');
+
+/**
+ * Resolves text location names to pre-defined North Eastern Region locations and coordinates.
+ * @param {string} locationName 
+ * @returns {object|null}
+ */
+const resolveNERLocation = (locationName) => {
+  if (!locationName) return null;
+  const normalized = locationName.trim().toLowerCase();
+
+  // Try exact or prefix match first (e.g. "Guw" -> "Guwahati")
+  let match = nerLocations.find(
+    (loc) =>
+      loc.name.toLowerCase() === normalized ||
+      loc.name.toLowerCase().startsWith(normalized)
+  );
+
+  // Fallback to substring matching
+  if (!match) {
+    match = nerLocations.find((loc) =>
+      normalized.includes(loc.name.toLowerCase()) ||
+      loc.name.toLowerCase().includes(normalized)
+    );
+  }
+
+  if (match) {
+    return {
+      latitude: match.latitude,
+      longitude: match.longitude,
+      name: match.name,
+      state: match.state,
+      type: match.type,
+    };
+  }
+
+  return null;
+};
+
+module.exports = {
+  resolveNERLocation
+};
